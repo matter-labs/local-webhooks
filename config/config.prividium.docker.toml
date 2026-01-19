@@ -1,0 +1,89 @@
+# =================================================================
+# ZKsync Webhook Service Configuration
+# =================================================================
+#
+# This configuration includes:
+# 1. Server - How the service runs
+# 2. Workers - Throughput and resource allocation
+# 3. Delivery - Webhook retry strategy
+# 4. Supervision - Failure handling and recovery
+# 5. Chains - What networks to monitor
+#
+# =================================================================
+
+# -----------------------------------------------------------------
+# Operational Settings
+# -----------------------------------------------------------------
+
+[server]
+# Public API port (externally accessible)
+api_port = 8081
+
+# Admin/observability port (internal only)
+# Serves: /health, /metrics, /stats, /admin/jobs
+admin_port = 8080
+
+# Log level (trace, debug, info, warn, error)
+log_level = "info"
+
+# -----------------------------------------------------------------
+# Resource Allocation
+# -----------------------------------------------------------------
+
+[workers]
+# Number of parallel delivery workers processing the outbound webhook queue
+concurrency = 2
+
+# -----------------------------------------------------------------
+# Delivery Policy (Webhook retries)
+# -----------------------------------------------------------------
+
+[delivery]
+# Maximum number of attempts before dead-lettering a webhook
+max_attempts = 10
+
+# Exponential backoff settings for webhook retries
+base_backoff_secs = 30      # First retry: 30s
+max_backoff_secs = 1800     # Cap at 30 minutes
+
+# -----------------------------------------------------------------
+# Resilience & Supervision (Failure handling)
+# -----------------------------------------------------------------
+
+[supervision]
+# Maximum consecutive failures before permanently halting a chain poller
+max_chain_failures = 10
+
+# Maximum consecutive failures before permanently halting a worker
+max_worker_failures = 5
+
+# Exponential backoff settings for chain pollers
+# First retry: base_backoff_secs, Second: 2*base, Third: 4*base, etc.
+base_backoff_secs = 5      # Start waiting 5s
+max_backoff_secs = 300     # Cap waiting at 5 mins
+
+# Exponential backoff settings for workers
+base_worker_backoff_secs = 2    # Start waiting 2s
+max_worker_backoff_secs = 60    # Cap waiting at 1 min
+
+# -----------------------------------------------------------------
+# Chain Configurations 
+# -----------------------------------------------------------------
+
+[chain]
+name = "zksyncos_prividium"
+chain_id = 8022834
+
+# RPC Provider URL
+# Note: For local development against a local node, use "http://127.0.0.1:8545"
+rpc_url = "https://api.testnet-prividium.zksync.dev/rpc/service"
+
+# How often to check for new blocks (milliseconds)
+poll_interval_ms = 5000
+
+# Limit the scan range to prevent timeouts on public RPCs
+max_blocks_per_poll = 100
+
+# Authentication settings for SIWE-gated RPC endpoints
+[chain.auth]
+private_key_env = "PRIVIDIUM_SIGNER_KEY"

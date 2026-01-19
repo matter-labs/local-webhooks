@@ -1,0 +1,12 @@
+[book]
+title = "Authenticated ZKsync Webhooks"
+authors = ["Matter Labs"]
+language = "en"
+multilingual = false
+src = "docs"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/matter-labs/local-webhooks"
+edit-url-template = "https://github.com/matter-labs/local-webhooks/edit/main/{path}"
