@@ -1,0 +1,5 @@
+# IDEs
+.idea
+.env
+tools/mock-server/target
+book/

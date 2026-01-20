@@ -1,0 +1,70 @@
+name: zksync-webhook
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: zksync-webhook-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-zksync_webhook_db}
+    ports:
+      - "${DB_PORT:-55432}:5432"
+
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - webhook_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  webhook-service:
+    image: quay.io/matterlabs_enterprise/webhook-service:v0.1.8
+    platform: linux/amd64
+    container_name: webhook-service
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-zksync_webhook_db}}
+      ZKSYNC_WEBHOOK_CONFIG: /config/config.toml
+      RUST_LOG: ${RUST_LOG:-info}
+      PRIVIDIUM_SIGNER_KEY: ${PRIVIDIUM_SIGNER_KEY:?Set PRIVIDIUM_SIGNER_KEY in .env}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY in .env}
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+    # Used for local development to allow container to access host services
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    ports:
+      - "${API_PORT:-8081}:8081"
+      - "${ADMIN_PORT:-8080}:8080"
+
+    networks:
+      - webhook_net
+
+    volumes:
+      - ${HOST_CONFIG_PATH:-./config/config.prividium.docker.toml}:/config/config.toml:ro
+
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  
+
+networks:
+  webhook_net:
+    driver: bridge
