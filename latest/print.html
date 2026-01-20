@@ -1,0 +1,1435 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Authenticated ZKsync Webhooks</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Authenticated ZKsync Webhooks</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/matter-labs/local-webhooks" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
+<p>This repository provides a local Docker setup for the ZKsync Webhook Service.
+It is intended for short-term testing with an authenticated, private image.</p>
+<p>The webhook delivery format adheres to the Standard Webhooks open standard.
+<a href="https://www.standardwebhooks.com/">Specification</a> and reference <a href="https://github.com/standard-webhooks/standard-webhooks/tree/main/libraries">verification libraries</a>.</p>
+<p>What runs locally:</p>
+<ul>
+<li>Postgres and the webhook service via Docker Compose.</li>
+<li>Webhook deliveries sent to <code>WEBHOOK_DESTINATION_URL</code>.</li>
+<li>An optional mock receiver in <code>tools/mock-server</code>.</li>
+</ul>
+<p>Default ports:</p>
+<ul>
+<li>API: <code>8081</code></li>
+<li>Admin: <code>8080</code></li>
+</ul>
+<p>You will need Quay credentials plus <code>PRIVIDIUM_SIGNER_KEY</code> and <code>ENCRYPTION_KEY</code>
+in your <code>.env</code> file before the service will start.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="quickstart"><a class="header" href="#quickstart">Quickstart</a></h1>
+<p>This guide walks you through running the ZKsync Webhook service locally using
+Docker, and validating end-to-end webhook delivery.</p>
+<hr />
+<h2 id="1-set-up-environment"><a class="header" href="#1-set-up-environment">1. Set up environment</a></h2>
+<p>Create a local <code>.env</code> file:</p>
+<pre><code class="language-bash">make setup
+</code></pre>
+<p>Edit <code>.env</code> and set the required values.</p>
+<h3 id="required"><a class="header" href="#required">Required</a></h3>
+<ul>
+<li><code>DOCKER_USERNAME</code> — Quay.io username</li>
+<li><code>DOCKER_PASSWORD</code> — Quay.io password or access token</li>
+<li><code>PRIVIDIUM_SIGNER_KEY</code> — signer key used by the service (<strong>local only</strong>)</li>
+<li><code>ENCRYPTION_KEY</code> — encryption key used for stored secrets (<strong>local only</strong>)</li>
+<li><code>WEBHOOK_DESTINATION_URL</code> — URL where webhooks will be delivered</li>
+</ul>
+<p>Example for local testing:</p>
+<pre><code class="language-env">WEBHOOK_DESTINATION_URL=http://host.docker.internal:9000/webhook
+</code></pre>
+<blockquote>
+<p><strong>Note</strong>
+<code>PRIVIDIUM_SIGNER_KEY</code> and <code>ENCRYPTION_KEY</code> are only required for local
+development. In managed deployments, these are handled by ZKsync.</p>
+</blockquote>
+<h3 id="create-a-prividium-service-account-local-use-only"><a class="header" href="#create-a-prividium-service-account-local-use-only">Create a Prividium service account (local use only)</a></h3>
+<p>The webhook service authenticates to Prividium using a <strong>service account</strong>.
+You will use its private key as <code>PRIVIDIUM_SIGNER_KEY</code> in your <code>.env</code>.</p>
+<ol>
+<li>Create a new Ethereum account and securely store the public address and private key.</li>
+<li>Register the service account in the Prividium Admin Dashboard:
+<ul>
+<li>
+<p>Log in:</p>
+<p><strong>Note:</strong> Update to reflect your own environment.</p>
+<pre><code class="language-bash">https://admin.testnet.zksync.dev/
+</code></pre>
+</li>
+<li>
+<p>Navigate to <strong>Services</strong></p>
+</li>
+<li>
+<p>Click <strong>+ New Service</strong></p>
+</li>
+<li>
+<p>Fill in:</p>
+<ul>
+<li><strong>Name</strong>: Descriptive service name (e.g. <code>local-webhooks</code>)</li>
+<li><strong>Public Key</strong>: The Ethereum address created above</li>
+</ul>
+</li>
+<li>
+<p>Click <strong>Save</strong></p>
+</li>
+</ul>
+</li>
+</ol>
+<p>You should now see the service listed in the Services table.</p>
+<hr />
+<h2 id="2-log-in-to-quayio"><a class="header" href="#2-log-in-to-quayio">2. Log in to Quay.io</a></h2>
+<p>Docker images are pulled from Quay and require authentication. Recall these credentials will be provided to you by Matter Labs.</p>
+<pre><code class="language-bash">make login
+</code></pre>
+<hr />
+<h2 id="3-start-the-stack"><a class="header" href="#3-start-the-stack">3. Start the stack</a></h2>
+<p>Start the webhook service and database:</p>
+<pre><code class="language-bash">make up
+</code></pre>
+<p>By default:</p>
+<ul>
+<li>API base URL: <code>http://localhost:8081</code></li>
+<li>If you only need a different host port, set <code>API_PORT</code> in <code>.env</code></li>
+<li>If you need the service to listen on a different port, update the config file
+and Docker Compose (see <a href="./configuration.html">Configuration</a>)</li>
+</ul>
+<p>The startup output lists available API endpoints.</p>
+<p>To view the service logs, run:</p>
+<pre><code class="language-bash">make logs
+</code></pre>
+<hr />
+<h2 id="4-optional-run-a-local-mock-receiver"><a class="header" href="#4-optional-run-a-local-mock-receiver">4. (Optional) Run a local mock receiver</a></h2>
+<p>For local testing, you can run a simple webhook receiver that prints headers and
+payloads.</p>
+<pre><code class="language-bash">make mock-server
+</code></pre>
+<p>This starts a local Rust-based server that logs incoming webhook deliveries.
+It is useful for inspecting payloads and signature headers.</p>
+<hr />
+<h2 id="5-optional-get-a-siwe-auth-token"><a class="header" href="#5-optional-get-a-siwe-auth-token">5. (Optional) Get a SIWE auth token</a></h2>
+<p>API endpoints for Prividium chains require authentication. This repo includes a helper that obtains a token via <strong>Sign-In with Ethereum (SIWE)</strong>.</p>
+<h3 id="51-configure-siwe-auth-context-local-only"><a class="header" href="#51-configure-siwe-auth-context-local-only">5.1 Configure SIWE auth context (local only)</a></h3>
+<p>Ensure the following exist in your <code>.env</code>:</p>
+<p><strong>Note:</strong> Update values to reflect correct API_URL and domain.</p>
+<pre><code>API_URL=https://api.testnet.zksync.dev
+DOMAIN=user-panel.testnet.zksync.dev
+</code></pre>
+<blockquote>
+<p>These values are only used by helper scripts, not by the running service.</p>
+</blockquote>
+<h3 id="52-generate-a-token-foundry-keystore-recommended"><a class="header" href="#52-generate-a-token-foundry-keystore-recommended">5.2 Generate a token (Foundry keystore recommended)</a></h3>
+<p>Make sure a Foundry account exists in your keystore (see the <strong>SIWE Token Helper</strong>
+page for how to create or import an account).</p>
+<p><strong>Note:</strong> Update <code>ACCOUNT</code> to reflect own Foundry keystore name.</p>
+<pre><code class="language-bash">make get-token ACCOUNT=test-account
+</code></pre>
+<p>On success, the token is printed to stdout:</p>
+<pre><code class="language-text">TOKEN: &lt;value&gt;
+</code></pre>
+<p>Treat this token as a credential.</p>
+<p>Export the returned token for convenience:</p>
+<pre><code class="language-bash">export TOKEN=&lt;PASTE_TOKEN_HERE&gt;
+</code></pre>
+<h3 id="53-alternative-raw-private-key"><a class="header" href="#53-alternative-raw-private-key">5.3 Alternative (raw private key)</a></h3>
+<p>If you don’t have a Foundry account, you can run the script directly:</p>
+<pre><code class="language-bash">PRIVATE_KEY=0xabc... scripts/get_token.sh
+</code></pre>
+<p>Optional address verification:</p>
+<pre><code class="language-bash">PRIVATE_KEY=0xabc... ADDRESS=0xYourAddress scripts/get_token.sh
+</code></pre>
+<hr />
+<h2 id="6-create-an-event-webhook-example"><a class="header" href="#6-create-an-event-webhook-example">6. Create an event webhook (example)</a></h2>
+<p>With the service running and a token available, you can create a webhook
+subscription for on-chain events.</p>
+<p>This example creates an <strong>event webhook</strong> that delivers matching logs to your
+configured <code>WEBHOOK_DESTINATION_URL</code>.</p>
+<pre><code class="language-bash">curl -X POST "$API_URL/v1/event-webhook" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "name": "example-event-webhook",
+    "url": "http://host.docker.internal:9000/webhook",
+    "contract": "0x66EC845C0B07D1728B1b14921D561fe7963A5Ab8",
+    "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b"
+  }'
+</code></pre>
+<p>On success, the API returns the created webhook configuration, including its <code>id</code>.</p>
+<p>When matching events are detected on-chain, webhook deliveries will be sent to:</p>
+<pre><code class="language-text">WEBHOOK_DESTINATION_URL
+</code></pre>
+<p>If you are running the mock receiver, you should see:</p>
+<ul>
+<li>request headers (including <code>webhook-signature</code>)</li>
+<li>the full JSON payload printed</li>
+</ul>
+<h3 id="troubleshooting-delivery"><a class="header" href="#troubleshooting-delivery">Troubleshooting delivery</a></h3>
+<p>If you don’t see deliveries:</p>
+<ul>
+<li>ensure the webhook is <code>enabled: true</code></li>
+<li>verify the destination URL is reachable from Docker</li>
+<li>inspect logs:</li>
+</ul>
+<pre><code class="language-bash">make logs
+</code></pre>
+<hr />
+<h2 id="7-stop-the-stack"><a class="header" href="#7-stop-the-stack">7. Stop the stack</a></h2>
+<p>To stop all containers:</p>
+<pre><code class="language-bash">make down
+</code></pre>
+<p>To stop containers <strong>and remove all local data</strong>:</p>
+<pre><code class="language-bash">make reset
+</code></pre>
+<hr />
+<h2 id="useful-commands"><a class="header" href="#useful-commands">Useful commands</a></h2>
+<p>Run <code>make help</code> to see all available local commands:</p>
+<pre><code class="language-bash">make help
+</code></pre>
+<p>This includes:</p>
+<ul>
+<li>container status and logs</li>
+<li>mock webhook receiver</li>
+<li>SIWE token helper</li>
+<li>documentation serving and build commands</li>
+</ul>
+<hr />
+<h2 id="whats-next"><a class="header" href="#whats-next">What’s next</a></h2>
+<p>Once the stack is running and you’ve seen a webhook delivered, you can:</p>
+<ul>
+<li>create additional event or address webhooks</li>
+<li>verify webhook signatures</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="configuration"><a class="header" href="#configuration">Configuration</a></h1>
+<p>Local configuration is split across three places:</p>
+<ul>
+<li><code>.env</code> for host-side settings and secrets (ports, credentials, keys)</li>
+<li><code>config/config.prividium.docker.toml</code> for service configuration (ports, delivery, workers, chain)</li>
+<li><code>docker-compose.yml</code> for container wiring (port bindings, volume mounts)</li>
+</ul>
+<p>Changes to config files require restarting the containers.</p>
+<hr />
+<h2 id="use-a-custom-config-file"><a class="header" href="#use-a-custom-config-file">Use a custom config file</a></h2>
+<p>By default, Docker Compose mounts <code>config/config.prividium.docker.toml</code> into the
+container at <code>/config/config.toml</code>. To use a different file, set:</p>
+<pre><code>HOST_CONFIG_PATH=./path/to/your-config.toml
+</code></pre>
+<p>Then restart the stack.</p>
+<hr />
+<h2 id="change-api-or-admin-ports"><a class="header" href="#change-api-or-admin-ports">Change API or admin ports</a></h2>
+<p>There are two layers of ports:</p>
+<ul>
+<li><strong>Service ports (inside the container)</strong> from <code>config/config.prividium.docker.toml</code>:
+<ul>
+<li><code>[server].api_port</code></li>
+<li><code>[server].admin_port</code></li>
+</ul>
+</li>
+<li><strong>Host ports (on your machine)</strong> from <code>.env</code>:
+<ul>
+<li><code>API_PORT</code></li>
+<li><code>ADMIN_PORT</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="change-only-the-host-port"><a class="header" href="#change-only-the-host-port">Change only the host port</a></h3>
+<p>If you only want to expose the service on a different host port, update <code>.env</code>:</p>
+<pre><code>API_PORT=8081
+ADMIN_PORT=8080
+</code></pre>
+<p>The service continues to listen on the same container ports.</p>
+<h3 id="change-the-service-port-inside-the-container"><a class="header" href="#change-the-service-port-inside-the-container">Change the service port inside the container</a></h3>
+<p>If you want the service to listen on different internal ports:</p>
+<ol>
+<li>
+<p>Update <code>config/config.prividium.docker.toml</code>:</p>
+<pre><code>[server]
+api_port = 8081
+admin_port = 8080
+</code></pre>
+</li>
+<li>
+<p>Update <code>docker-compose.yml</code> to map host ports to the new container ports.
+The right-hand side of the mapping must match the config file:</p>
+<pre><code>ports:
+  - "${API_PORT:-8081}:8081"
+  - "${ADMIN_PORT:-8080}:8080"
+</code></pre>
+</li>
+<li>
+<p>Update the <code>webhook-service</code> healthcheck in <code>docker-compose.yml</code> to use the
+new admin port.</p>
+</li>
+</ol>
+<hr />
+<h3 id="payload-pruning-payload_pruning"><a class="header" href="#payload-pruning-payload_pruning">Payload Pruning (<code>[payload_pruning]</code>)</a></h3>
+<p>Controls retention and pruning of delivery job payloads.</p>
+<pre><code class="language-toml">[payload_pruning]
+interval_secs = 3600   # Run every hour
+retention_days = 7      # Keep payloads for 7 days
+batch_size = 5000       # Max rows pruned per batch
+</code></pre>
+<h2 id="other-common-settings"><a class="header" href="#other-common-settings">Other common settings</a></h2>
+<p>Use <code>config/config.prividium.docker.toml</code> to tune:</p>
+<ul>
+<li>log level: <code>[server].log_level</code></li>
+<li>retries/backoff: <code>[delivery]</code></li>
+<li>worker concurrency: <code>[workers].concurrency</code></li>
+<li>chain RPC and polling: <code>[chain]</code> and <code>[chain.auth]</code></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="authentication"><a class="header" href="#authentication">Authentication</a></h1>
+<p>Local testing requires two separate auth steps:</p>
+<ul>
+<li>Quay login to pull the private webhook-service image.</li>
+<li>SIWE token for authenticated API requests.</li>
+</ul>
+<p>This repo provides helpers for both:</p>
+<ul>
+<li><code>make login</code> uses the Quay credentials in <code>.env</code>.</li>
+<li><code>make get-token</code> runs the SIWE flow and prints a token.</li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li>Quay credentials are provided by Matter Labs.</li>
+<li>Keep registry credentials and tokens out of source control.</li>
+<li>Tokens are printed to stdout; store them securely.</li>
+<li>Webhook deliveries use a signing key, not the API token.</li>
+</ul>
+<hr />
+<h2 id="prividium-service-account-local-use-only"><a class="header" href="#prividium-service-account-local-use-only">Prividium service account (local use only)</a></h2>
+<p>The webhook service authenticates to Prividium using a <strong>service account</strong>.
+You will use its private key as <code>PRIVIDIUM_SIGNER_KEY</code> in your local <code>.env</code>.</p>
+<p>See the full setup guide:</p>
+<ul>
+<li><strong>Prividium Service Account</strong> in this section</li>
+</ul>
+<ol>
+<li>Create a new Ethereum account and securely store the public address and private key.</li>
+<li>Register the service account in the Prividium Admin Dashboard:
+<ul>
+<li>
+<p>Log in:</p>
+<p><strong>Note:</strong> Update value to reflect your own environment.</p>
+<pre><code class="language-bash">https://admin.testnet.zksync.dev/
+</code></pre>
+</li>
+<li>
+<p>Navigate to <strong>Services</strong></p>
+</li>
+<li>
+<p>Click <strong>+ New Service</strong></p>
+</li>
+<li>
+<p>Fill in:</p>
+<ul>
+<li><strong>Name</strong>: Descriptive service name (e.g. <code>local-webhooks</code>)</li>
+<li><strong>Public Key</strong>: The Ethereum address created above</li>
+</ul>
+</li>
+<li>
+<p>Click <strong>Save</strong></p>
+</li>
+</ul>
+</li>
+</ol>
+<p>You should now see the service listed in the Services table.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="quay-login"><a class="header" href="#quay-login">Quay Login</a></h1>
+<p>The webhook-service image is hosted on Quay and requires credentials from Matter Labs.</p>
+<p>Recall this is only necessary when running the Webhook service locally.</p>
+<p>Set the following values in <code>.env</code>:</p>
+<ul>
+<li><code>DOCKER_USERNAME</code></li>
+<li><code>DOCKER_PASSWORD</code></li>
+</ul>
+<p>Then run:</p>
+<pre><code class="language-bash">make login
+</code></pre>
+<p>This calls <code>docker login quay.io</code> with the values from <code>.env</code>.</p>
+<p>Repeat the login if credentials rotate or Docker clears its credential store.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="prividium-service-account"><a class="header" href="#prividium-service-account">Prividium Service Account</a></h1>
+<p>The webhook service authenticates to Prividium using a <strong>service account</strong>.
+You will reference the service account’s private key as <code>PRIVIDIUM_SIGNER_KEY</code>
+in your local <code>.env</code>.</p>
+<p><strong>Note:</strong> This is only required for local use of the Webhooks service.</p>
+<hr />
+<h2 id="1-create-an-ethereum-account"><a class="header" href="#1-create-an-ethereum-account">1. Create an Ethereum account</a></h2>
+<p>Create a new Ethereum account and securely store:</p>
+<ul>
+<li>Public address</li>
+<li>Private key (required later)</li>
+</ul>
+<hr />
+<h2 id="2-register-the-service-account-in-prividium"><a class="header" href="#2-register-the-service-account-in-prividium">2. Register the service account in Prividium</a></h2>
+<ol>
+<li>Log in to the Prividium Admin Dashboard</li>
+</ol>
+<p><strong>Note:</strong> Update to reflect your environment.</p>
+<pre><code class="language-bash">https://admin.testnet.zksync.dev/
+</code></pre>
+<ol start="2">
+<li>Navigate to <strong>Services</strong></li>
+<li>Click <strong>+ New Service</strong></li>
+<li>Fill in:
+<ul>
+<li><strong>Name</strong>: Descriptive service name (e.g. <code>local-webhooks</code>)</li>
+<li><strong>Public Key</strong>: Ethereum address created above</li>
+</ul>
+</li>
+<li>Click <strong>Save</strong></li>
+</ol>
+<p>You should now see the service listed in the Services table.</p>
+<blockquote>
+<p>You will reference this account’s private key in your local <code>.env</code> file.</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="siwe-token-helper-scriptsget_tokensh"><a class="header" href="#siwe-token-helper-scriptsget_tokensh">SIWE Token Helper (<code>scripts/get_token.sh</code>)</a></h1>
+<p>API requests to this service require authentication.<br />
+This repository includes a helper script to obtain a tenant token via <strong>Sign-In with Ethereum (SIWE)</strong>.</p>
+<hr />
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>The following tools must be installed and available in your <code>PATH</code>:</p>
+<ul>
+<li><code>curl</code></li>
+<li><code>jq</code></li>
+<li><code>cast</code> (Foundry)</li>
+<li><code>sed</code></li>
+</ul>
+<hr />
+<h2 id="required-environment"><a class="header" href="#required-environment">Required environment</a></h2>
+<p>Add the following values to your <code>.env</code> file (or export them in your shell):</p>
+<p><strong>Note:</strong> Update these values to reflect your own environment.</p>
+<ul>
+<li><code>API_URL</code> — base URL for the service<br />
+<em>Example:</em> <code>https://api.testnet.zksync.dev</code></li>
+<li><code>DOMAIN</code> — SIWE domain<br />
+<em>Example:</em> <code>user-panel.testnet.zksync.dev</code></li>
+</ul>
+<blockquote>
+<p>These values are only used by helper scripts, not by the running service.</p>
+</blockquote>
+<h3 id="load-env-into-your-shell-recommended"><a class="header" href="#load-env-into-your-shell-recommended">Load <code>.env</code> into your shell (recommended)</a></h3>
+<pre><code class="language-bash">set -a
+source .env
+set +a
+</code></pre>
+<p>If you use <code>make get-token</code>, the Make target sources <code>.env</code> for you. When running
+<code>scripts/get_token.sh</code> directly, make sure <code>API_URL</code> and <code>DOMAIN</code> are exported.</p>
+<hr />
+<h2 id="creating-a-foundry-account-recommended"><a class="header" href="#creating-a-foundry-account-recommended">Creating a Foundry account (recommended)</a></h2>
+<p>The <strong>recommended way</strong> to use this helper is with a <strong>Foundry-managed account</strong>.
+This avoids placing raw private keys in environment variables and keeps key
+material encrypted in Foundry’s keystore.</p>
+<h3 id="create-a-new-account"><a class="header" href="#create-a-new-account">Create a new account</a></h3>
+<pre><code class="language-bash">cast wallet new
+</code></pre>
+<p>You will be prompted to:</p>
+<ul>
+<li>choose an account name (e.g. <code>dev</code>)</li>
+<li>optionally set a password</li>
+</ul>
+<p>The private key is stored securely.</p>
+<h3 id="import-an-existing-private-key"><a class="header" href="#import-an-existing-private-key">Import an existing private key</a></h3>
+<p>If you already have a private key and want Foundry to manage it:</p>
+<pre><code class="language-bash">cast wallet import dev
+</code></pre>
+<p>You will be prompted to paste the private key and set a password.
+After importing, you no longer need to export the private key in your environment.</p>
+<h3 id="list-available-accounts"><a class="header" href="#list-available-accounts">List available accounts</a></h3>
+<pre><code class="language-bash">cast wallet list
+</code></pre>
+<h3 id="verify-an-account-address"><a class="header" href="#verify-an-account-address">Verify an account address</a></h3>
+<pre><code class="language-bash">cast wallet address --account dev
+</code></pre>
+<hr />
+<h2 id="recommended-usage-foundry-account"><a class="header" href="#recommended-usage-foundry-account">Recommended usage (Foundry account)</a></h2>
+<p>Once a Foundry account exists, this is the preferred way to obtain a token.</p>
+<pre><code class="language-bash">scripts/get_token.sh --account dev
+</code></pre>
+<h3 id="optionally-pin--verify-an-address"><a class="header" href="#optionally-pin--verify-an-address">Optionally pin / verify an address</a></h3>
+<p>You may explicitly provide an address. The script will verify it matches the signer:</p>
+<pre><code class="language-bash">scripts/get_token.sh --account dev 0xYourAddress
+</code></pre>
+<p>If the address does not match the signer, the script will fail with a clear error.</p>
+<hr />
+<h2 id="using-make-foundry-account"><a class="header" href="#using-make-foundry-account">Using Make (Foundry account)</a></h2>
+<pre><code class="language-bash">make get-token ACCOUNT=dev
+</code></pre>
+<p>Optionally pin / verify an address:</p>
+<pre><code class="language-bash">make get-token ACCOUNT=dev ADDRESS=0xYourAddress
+</code></pre>
+<hr />
+<h2 id="alternative-usage-private_key"><a class="header" href="#alternative-usage-private_key">Alternative usage (PRIVATE_KEY)</a></h2>
+<p>If you do not have a Foundry account available, you can sign using a raw private key.</p>
+<pre><code class="language-bash">PRIVATE_KEY=0xabc... scripts/get_token.sh
+</code></pre>
+<h3 id="optional-address-verification"><a class="header" href="#optional-address-verification">Optional address verification</a></h3>
+<pre><code class="language-bash">PRIVATE_KEY=0xabc... scripts/get_token.sh 0xYourAddress
+</code></pre>
+<p>The script will ensure the private key corresponds to the provided address.</p>
+<p>Note: the <code>make get-token</code> helper always uses <code>--account</code>, so for <code>PRIVATE_KEY</code>
+signing you must run <code>scripts/get_token.sh</code> directly.</p>
+<h2 id="output"><a class="header" href="#output">Output</a></h2>
+<p>On success, the script prints:</p>
+<pre><code class="language-text">TOKEN: &lt;value&gt;
+</code></pre>
+<p>This will be used for authentication for the webhook service.</p>
+<hr />
+<h2 id="notes--troubleshooting"><a class="header" href="#notes--troubleshooting">Notes &amp; troubleshooting</a></h2>
+<ul>
+<li>If no signer is provided, the script will fail and explain how to proceed.</li>
+<li>If no address is provided, the script derives it automatically from the signer.</li>
+<li>If both a signer and address are provided, the script verifies they match.</li>
+<li>Use <code>--print-only</code> to debug server responses if token exchange fails.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="using-the-api"><a class="header" href="#using-the-api">Using the API</a></h1>
+<p>The local API listens on <code>http://localhost:8081</code> by default (see <code>API_PORT</code> in <code>.env</code>).
+When you run <code>make up</code>, the routes are shown under the <code>/v1</code> prefix.
+Paths in this section are relative to the API base.
+Webhook endpoint UUIDs used in path parameters come from create responses or, preferably,
+from list endpoints. The list responses include <code>endpoint.id</code>, which is the value to
+use as <code>&lt;ENDPOINT_UUID&gt;</code> in subsequent calls (update, delete, address management,
+and signing key rotation).
+If your deployment uses a different prefix, keep the relative paths unchanged.</p>
+<p>All routes require authentication; see the SIWE Token page for a helper script.</p>
+<p>Common behavior:</p>
+<ul>
+<li>Create endpoints return a plaintext signing key only once.</li>
+<li>Success responses use <code>201</code> (create), <code>200</code> (get/list/update), or <code>204</code> (delete).</li>
+<li>Error keys include <code>BadRequest</code> and <code>NotFound</code>.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="event-webhooks"><a class="header" href="#event-webhooks">Event Webhooks</a></h1>
+<p>Event webhooks notify your server when a specific on-chain event is observed.
+Each event webhook consists of:</p>
+<ul>
+<li>A <strong>webhook endpoint</strong> (destination URL, name, signing key)</li>
+<li>A <strong>single event subscription</strong> (<code>contract</code> + <code>topic0</code> + optional <code>from_block</code>)</li>
+</ul>
+<hr />
+<h2 id="routes"><a class="header" href="#routes">Routes</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th></tr></thead><tbody>
+<tr><td>POST</td><td><code>/v1/event-webhook</code></td></tr>
+<tr><td>GET</td><td><code>/v1/event-webhook</code></td></tr>
+<tr><td>GET</td><td><code>/v1/event-webhook/{id}</code></td></tr>
+<tr><td>PATCH</td><td><code>/v1/event-webhook/{id}</code></td></tr>
+<tr><td>DELETE</td><td><code>/v1/event-webhook/{id}</code></td></tr>
+</tbody></table>
+</div>
+<p>All routes require authentication.</p>
+<hr />
+<h2 id="list-event-webhooks"><a class="header" href="#list-event-webhooks">List Event Webhooks</a></h2>
+<p>List all event webhooks owned by the authenticated user. This is the best way
+to obtain the endpoint UUIDs used by get, update, delete, and signing key
+rotation endpoints.</p>
+<h3 id="request"><a class="header" href="#request">Request</a></h3>
+<pre><code class="language-bash">curl "http://localhost:8081/v1/event-webhook?limit=20&amp;offset=0" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;"
+</code></pre>
+<h3 id="response-200-ok"><a class="header" href="#response-200-ok">Response (<code>200 OK</code>)</a></h3>
+<p>Each item includes an <code>endpoint.id</code> field. Use that value as <code>&lt;ENDPOINT_UUID&gt;</code> in
+subsequent calls.</p>
+<p>Example item:</p>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "name": "example-event-webhook",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "9592c92a-19f7-4ee4-9ed1-945293f6fd2d",
+    "endpoint_id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "chain_name": "prividium_testnet",
+    "chain_id": 8022834,
+    "contract": "0x32de7f85388d15365f87d96c94241a43880eba26",
+    "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b",
+    "from_block": 31114,
+    "status": "active"
+  },
+  "user_id": "G8df2r3YFnrG5gwpn7rzD"
+}
+</code></pre>
+<hr />
+<h2 id="create-event-webhook"><a class="header" href="#create-event-webhook">Create Event Webhook</a></h2>
+<p>Create a new webhook endpoint and register an event subscription.</p>
+<ul>
+<li>A signing secret is generated automatically.</li>
+<li>The <strong>plaintext signing key is returned only once</strong>, in the create response.</li>
+<li>Store the signing key securely; it cannot be retrieved later.</li>
+</ul>
+<h3 id="request-1"><a class="header" href="#request-1">Request</a></h3>
+<pre><code class="language-bash">curl -X POST http://localhost:8081/v1/event-webhook \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  -d '{
+    "name": "My Mint Watcher",
+    "url": "http://host.docker.internal:9000/webhook",
+    "contract": "0x66EC845C0B07D1728B1b14921D561fe7963A5Ab8",
+    "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b"
+  }'
+</code></pre>
+<h3 id="response-201-created"><a class="header" href="#response-201-created">Response (<code>201 Created</code>)</a></h3>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "588793f2-42bf-496f-ac46-a7cd7cd3bc08",
+    "name": "My Mint Watcher",
+    "url": "http://host.docker.internal:9000/webhook",
+    "signing_key": "whsec_0f71ea604c43cea27fc8ccc37bbb523055b0cbf3b9927f1e5e516cc8d1f84e0a",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "ec849e0b-8bf2-4d8a-ad4b-09afc0783e00",
+    "endpoint_id": "588793f2-42bf-496f-ac46-a7cd7cd3bc08",
+    "chain_name": "zksyncos_prividium",
+    "chain_id": 8022834,
+    "contract": "0x66ec845c0b07d1728b1b14921d561fe7963a5ab8",
+    "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b",
+    "from_block": 18128,
+    "status": "active"
+  },
+  "user_id": "rCNv_z0CebSRbJd01N"
+}
+</code></pre>
+<hr />
+<h2 id="get-event-webhook"><a class="header" href="#get-event-webhook">Get Event Webhook</a></h2>
+<p>Retrieve a single event webhook by ID.</p>
+<h3 id="request-2"><a class="header" href="#request-2">Request</a></h3>
+<pre><code class="language-bash">curl -X GET http://localhost:8081/v1/event-webhook/&lt;ENDPOINT_UUID&gt; \
+  -H "Authorization: Bearer &lt;TOKEN&gt;"
+</code></pre>
+<h3 id="response-200-ok-1"><a class="header" href="#response-200-ok-1">Response (<code>200 OK</code>)</a></h3>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "588793f2-42bf-496f-ac46-a7cd7cd3bc08",
+    "name": "My Mint Watcher",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "ec849e0b-8bf2-4d8a-ad4b-09afc0783e00",
+    "endpoint_id": "588793f2-42bf-496f-ac46-a7cd7cd3bc08",
+    "chain_name": "zksyncos_prividium",
+    "chain_id": 8022834,
+    "contract": "0x66ec845c0b07d1728b1b14921d561fe7963a5ab8",
+    "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b",
+    "from_block": 18128,
+    "status": "active"
+  },
+  "user_id": "rCNv_z0CbeSRbJd01N"
+}
+</code></pre>
+<blockquote>
+<p>Note: <code>signing_key</code> is <strong>not</strong> returned on read operations.</p>
+</blockquote>
+<hr />
+<h2 id="update-event-webhook"><a class="header" href="#update-event-webhook">Update Event Webhook</a></h2>
+<p>Update mutable webhook fields.
+The event subscription (<code>contract</code>, <code>topic0</code>, chain) cannot be changed.</p>
+<h3 id="request-3"><a class="header" href="#request-3">Request</a></h3>
+<pre><code class="language-bash">curl -X PATCH http://localhost:8081/v1/event-webhook/&lt;ENDPOINT_UUID&gt; \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  -d '{
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  }'
+</code></pre>
+<h3 id="response-200-ok-2"><a class="header" href="#response-200-ok-2">Response (<code>200 OK</code>)</a></h3>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "588793f2-42bf-496f-ac46-a7cd7cd3bc08",
+    "name": "My Mint Watcher",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "ec849e0b-8bf2-4d8a-ad4b-09afc0783e00",
+    "endpoint_id": "588793f2-42bf-496f-ac46-a7cd7cd3bc08",
+    "chain_name": "zksyncos_prividium",
+    "chain_id": 8022834,
+    "contract": "0x66ec845c0b07d1728b1b14921d561fe7963a5ab8",
+    "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b",
+    "from_block": 18128,
+    "status": "active"
+  },
+  "user_id": "rCNv_z0CebSRbJd01N"
+}
+</code></pre>
+<hr />
+<h2 id="delete-event-webhook"><a class="header" href="#delete-event-webhook">Delete Event Webhook</a></h2>
+<p>Permanently deletes the webhook endpoint and its associated subscription.</p>
+<h3 id="request-4"><a class="header" href="#request-4">Request</a></h3>
+<pre><code class="language-bash">curl -X DELETE http://localhost:8081/v1/event-webhook/&lt;ENDPOINT_UUID&gt; \
+  -H "Authorization: Bearer &lt;TOKEN&gt;"
+</code></pre>
+<h3 id="response-204-no-content"><a class="header" href="#response-204-no-content">Response (<code>204 No Content</code>)</a></h3>
+<p>No response body is returned.</p>
+<hr />
+<h2 id="validation-rules"><a class="header" href="#validation-rules">Validation Rules</a></h2>
+<ul>
+<li><code>contract</code> must be a valid EVM address.</li>
+<li><code>topic0</code> must be a valid 32-byte hash.</li>
+<li>Invalid input results in <code>400 BadRequest</code>.</li>
+<li>Unknown or unauthorized IDs result in <code>404 NotFound</code>.</li>
+</ul>
+<hr />
+<h2 id="signing-key-handling"><a class="header" href="#signing-key-handling">Signing Key Handling</a></h2>
+<ul>
+<li>A signing key is generated on creation.</li>
+<li>The plaintext value is returned <strong>only once</strong>.</li>
+<li>See <strong>Webhook Delivery → Rotating Signing Keys</strong> for rotation and overlap details.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="address-webhooks"><a class="header" href="#address-webhooks">Address Webhooks</a></h1>
+<p>Address webhooks notify your server when activity occurs involving one or more
+on-chain addresses.</p>
+<p>Each address webhook consists of:</p>
+<ul>
+<li>A <strong>webhook endpoint</strong> (destination URL, name, signing key)</li>
+<li>An <strong>address subscription</strong> containing one or more monitored addresses</li>
+<li>Optional <code>from_block</code> to control where monitoring begins</li>
+</ul>
+<hr />
+<h2 id="routes-1"><a class="header" href="#routes-1">Routes</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th></tr></thead><tbody>
+<tr><td>POST</td><td><code>/v1/address-webhook</code></td></tr>
+<tr><td>GET</td><td><code>/v1/address-webhook</code></td></tr>
+<tr><td>GET</td><td><code>/v1/address-webhook/{id}</code></td></tr>
+<tr><td>PATCH</td><td><code>/v1/address-webhook/{id}</code></td></tr>
+<tr><td>DELETE</td><td><code>/v1/address-webhook/{id}</code></td></tr>
+<tr><td>GET</td><td><code>/v1/address-webhook/{id}/addresses</code></td></tr>
+<tr><td>POST</td><td><code>/v1/address-webhook/{id}/addresses</code></td></tr>
+<tr><td>DELETE</td><td><code>/v1/address-webhook/{id}/addresses</code></td></tr>
+</tbody></table>
+</div>
+<p>All routes require authentication.</p>
+<hr />
+<h2 id="list-address-webhooks"><a class="header" href="#list-address-webhooks">List Address Webhooks</a></h2>
+<p>List all address webhooks owned by the authenticated user. This is the best way
+to obtain the endpoint UUIDs used by get, update, delete, address management, and
+signing key rotation endpoints.</p>
+<h3 id="request-5"><a class="header" href="#request-5">Request</a></h3>
+<pre><code class="language-bash">curl "http://localhost:8081/v1/address-webhook?limit=20&amp;offset=0" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;"
+</code></pre>
+<h3 id="response-200-ok-3"><a class="header" href="#response-200-ok-3">Response (<code>200 OK</code>)</a></h3>
+<p>Each item includes an <code>endpoint.id</code> field. Use that value as <code>&lt;ENDPOINT_UUID&gt;</code> in
+subsequent calls.</p>
+<p>Example item:</p>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "name": "example-address-webhook",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "9592c92a-19f7-4ee4-9ed1-945293f6fd2d",
+    "endpoint_id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "chain_name": "prividium_testnet",
+    "chain_id": 8022834,
+    "from_block": 31114,
+    "status": "active"
+  },
+  "user_id": "G8df2r3YFnrG5gwpn7"
+}
+</code></pre>
+<hr />
+<h2 id="create-address-webhook"><a class="header" href="#create-address-webhook">Create Address Webhook</a></h2>
+<p>Create a new webhook endpoint and register an address subscription.</p>
+<ul>
+<li>A signing secret is generated automatically.</li>
+<li>The <strong>plaintext signing key is returned only once</strong>, in the create response.</li>
+<li>Store the signing key securely; it cannot be retrieved later.</li>
+</ul>
+<h3 id="request-6"><a class="header" href="#request-6">Request</a></h3>
+<pre><code class="language-bash">curl -X POST http://localhost:8081/v1/address-webhook \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  -d '{
+    "name": "webhook-address",
+    "url": "http://host.docker.internal:9000/webhook",
+    "addresses": [
+      "0x0e9c68525eA0739f9f013c8042cFe8CD1f323C19",
+      "0x5A39B3f95812DC1E902ab745A8FB5894a8ab8897"
+    ]
+  }'
+</code></pre>
+<h3 id="response-201-created-1"><a class="header" href="#response-201-created-1">Response (<code>201 Created</code>)</a></h3>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "7ef711b5-26aa-4989-860a-9305f3f3715f",
+    "name": "webhook-address",
+    "url": "http://host.docker.internal:9000/webhook",
+    "signing_key": "whsec_38f30005e37490b6656b278f99547a9a9453ca4d472feefd0983054802a5373c",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "79657e71-403a-4be0-94aa-ca83b03d9d98",
+    "endpoint_id": "7ef711b5-26aa-4989-860a-9305f3f3715f",
+    "chain_name": "zksyncos_prividium",
+    "chain_id": 8022834,
+    "from_block": 19122,
+    "status": "active"
+  },
+  "user_id": "Rz4ovpmb-1--qLH3HZ"
+}
+</code></pre>
+<hr />
+<h2 id="get-address-webhook"><a class="header" href="#get-address-webhook">Get Address Webhook</a></h2>
+<p>Retrieve a single address webhook by ID.</p>
+<h3 id="request-7"><a class="header" href="#request-7">Request</a></h3>
+<pre><code class="language-bash">curl -X GET http://localhost:8081/v1/address-webhook/&lt;ENDPOINT_UUID&gt; \
+  -H "Authorization: Bearer &lt;TOKEN&gt;"
+</code></pre>
+<h3 id="response-200-ok-4"><a class="header" href="#response-200-ok-4">Response (<code>200 OK</code>)</a></h3>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "7ef711b5-26aa-4989-860a-9305f3f3715f",
+    "name": "webhook-address",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "79657e71-403a-4be0-94aa-ca83b03d9d98",
+    "endpoint_id": "7ef711b5-26aa-4989-860a-9305f3f3715f",
+    "chain_name": "zksyncos_prividium",
+    "chain_id": 8022834,
+    "from_block": 19122,
+    "status": "active"
+  },
+  "user_id": "Rz4ovpmb-1--qLH3H"
+}
+</code></pre>
+<blockquote>
+<p>Note: <code>signing_key</code> is <strong>not</strong> returned on read operations.</p>
+</blockquote>
+<hr />
+<h2 id="update-address-webhook"><a class="header" href="#update-address-webhook">Update Address Webhook</a></h2>
+<p>Update mutable webhook fields.</p>
+<h3 id="request-8"><a class="header" href="#request-8">Request</a></h3>
+<pre><code class="language-bash">curl -X PATCH http://localhost:8081/v1/address-webhook/&lt;ENDPOINT_UUID&gt; \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  -d '{
+    "url": "http://host.docker.internal:9000/webhook"
+  }'
+</code></pre>
+<h3 id="response-200-ok-5"><a class="header" href="#response-200-ok-5">Response (<code>200 OK</code>)</a></h3>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "5b2a8400-d965-48c5-b74d-bf83c33d13be",
+    "name": "My Address Watcher",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "3094fe85-0a19-4b95-afdf-756ab3697257",
+    "endpoint_id": "5b2a8400-d965-48c5-b74d-bf83c33d13be",
+    "chain_name": "zksyncos_sepolia",
+    "chain_id": 8022705,
+    "from_block": 100896,
+    "status": "active"
+  }
+}
+</code></pre>
+<hr />
+<h2 id="delete-address-webhook"><a class="header" href="#delete-address-webhook">Delete Address Webhook</a></h2>
+<p>Permanently deletes the webhook endpoint and its associated subscription.</p>
+<h3 id="request-9"><a class="header" href="#request-9">Request</a></h3>
+<pre><code class="language-bash">curl -X DELETE http://localhost:8081/v1/address-webhook/&lt;ENDPOINT_UUID&gt; \
+  -H "Authorization: Bearer &lt;TOKEN&gt;"
+</code></pre>
+<h3 id="response-204-no-content-1"><a class="header" href="#response-204-no-content-1">Response (<code>204 No Content</code>)</a></h3>
+<p>No response body is returned.</p>
+<hr />
+<h2 id="manage-addresses"><a class="header" href="#manage-addresses">Manage Addresses</a></h2>
+<h3 id="list-addresses"><a class="header" href="#list-addresses">List Addresses</a></h3>
+<pre><code class="language-bash">curl -X GET http://localhost:8081/v1/address-webhook/&lt;ENDPOINT_UUID&gt;/addresses \
+  -H "Authorization: Bearer &lt;TOKEN&gt;"
+</code></pre>
+<pre><code class="language-json">{
+  "addresses": [
+    "0x0e9c68525ea0739f9f012c8042cfe8cd1f323c19",
+    "0x5a39b3f95812dc1e942ab757a8fb5894a8ab8897"
+  ]
+}
+</code></pre>
+<hr />
+<h3 id="add-addresses"><a class="header" href="#add-addresses">Add Addresses</a></h3>
+<ul>
+<li>At least <strong>one address</strong> is required.</li>
+</ul>
+<pre><code class="language-bash">curl -X POST http://localhost:8081/v1/address-webhook/&lt;ENDPOINT_UUID&gt;/addresses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  -d '{
+    "addresses": [
+      "0x1111111111111111111111111111111111111111"
+    ]
+  }'
+</code></pre>
+<p><strong>Response:</strong> <code>204 No Content</code></p>
+<hr />
+<h3 id="remove-addresses"><a class="header" href="#remove-addresses">Remove Addresses</a></h3>
+<pre><code class="language-bash">curl -X DELETE http://localhost:8081/v1/address-webhook/&lt;ENDPOINT_UUID&gt;/addresses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  -d '{
+    "addresses": [
+      "0x1111111111111111111111111111111111111111"
+    ]
+  }'
+</code></pre>
+<p><strong>Response:</strong> <code>204 No Content</code></p>
+<hr />
+<h2 id="validation-rules-1"><a class="header" href="#validation-rules-1">Validation Rules</a></h2>
+<ul>
+<li>All addresses must be valid EVM addresses.</li>
+<li>Unknown or unauthorized IDs result in <code>404 NotFound</code>.</li>
+</ul>
+<hr />
+<h2 id="signing-key-handling-1"><a class="header" href="#signing-key-handling-1">Signing Key Handling</a></h2>
+<ul>
+<li>A signing key is generated on creation.</li>
+<li>The plaintext value is returned <strong>only once</strong>.</li>
+<li>If the key is lost or exposed, rotate it immediately
+(see <strong>Webhook Delivery → Rotating the Signing Secret</strong>).</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="webhook-delivery"><a class="header" href="#webhook-delivery">Webhook Delivery</a></h1>
+<p>The service delivers webhooks by sending HTTP POST requests to <code>WEBHOOK_DESTINATION_URL</code>
+configured in your <code>.env</code>. The included mock receiver listens on <code>/webhook</code> at port 9000.</p>
+<p>Default destination in <code>.env-example</code> is <code>http://host.docker.internal:9000/webhook</code>.
+You can point <code>WEBHOOK_DESTINATION_URL</code> at any HTTP endpoint you control.
+Use <code>make mock-server</code> for a simple local receiver that logs headers and body.
+Any HTTP server that can accept POST requests can be used.</p>
+<p>Deliveries include Standard Webhooks headers (<code>webhook-id</code>, <code>webhook-timestamp</code>,
+<code>webhook-signature</code>) and are signed with a per-endpoint signing key. See the
+verification and rotation guides in this section for details.</p>
+<p>This service adheres to the Standard Webhooks open standard. [Specification(https://www.standardwebhooks.com/) and
+reference <a href="https://github.com/standard-webhooks/standard-webhooks/tree/main/libraries">verification libraries</a> are available.</p>
+<p>Delivery behavior is controlled by <code>config/config.prividium.docker.toml</code>, including retries
+and backoff settings for the local stack.
+Settings in that file are the local defaults for Docker Compose.</p>
+<p>See the pages in this section for receiver handling, signature verification, and rotation.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="handling-requests"><a class="header" href="#handling-requests">Handling Requests</a></h1>
+<p>Your webhook endpoint should be implemented as a <strong>fast, resilient ingestion endpoint</strong>.</p>
+<p>Deliveries use <strong>at-least-once</strong> semantics and may be retried. Your handler must be
+designed to acknowledge quickly, tolerate duplicates, and process payloads safely.</p>
+<hr />
+<h2 id="recommended-receiver-behavior"><a class="header" href="#recommended-receiver-behavior">Recommended receiver behavior</a></h2>
+<h3 id="treat-deliveries-as-at-least-once-idempotency-required"><a class="header" href="#treat-deliveries-as-at-least-once-idempotency-required">Treat deliveries as at-least-once (idempotency required)</a></h3>
+<p>The same delivery may be sent more than once due to retries, network issues, or
+receiver timeouts.</p>
+<p>Your handler <strong>must be idempotent</strong>.</p>
+<p>Recommended approaches:</p>
+<ul>
+<li>deduplicate using the <code>webhook-id</code> header (stable across retries)</li>
+<li>if you receive multiple endpoints on one URL, pair <code>webhook-id</code> with an endpoint identifier from the URL or payload</li>
+<li>design processing so re-running the same payload is safe</li>
+</ul>
+<hr />
+<h3 id="capture-the-raw-request-body"><a class="header" href="#capture-the-raw-request-body">Capture the raw request body</a></h3>
+<p>If you plan to verify webhook signatures, you must capture the <strong>exact raw request
+body bytes</strong> before parsing.</p>
+<p>Do:</p>
+<ul>
+<li>read raw bytes from the request</li>
+<li>store or verify them as-is</li>
+<li>parse JSON only after raw bytes are captured</li>
+</ul>
+<p>Don’t:</p>
+<ul>
+<li>re-serialize parsed JSON for verification</li>
+<li>modify whitespace or ordering before verification</li>
+</ul>
+<hr />
+<h3 id="validate-requests-defensively"><a class="header" href="#validate-requests-defensively">Validate requests defensively</a></h3>
+<p>At minimum:</p>
+<ul>
+<li>require <code>Content-Type: application/json</code></li>
+<li>enforce a maximum request body size</li>
+<li>apply request timeouts</li>
+<li>reject malformed payloads quickly with a <code>4xx</code> response</li>
+</ul>
+<p>Fail fast on invalid input to reduce unnecessary retries.</p>
+<hr />
+<h3 id="keep-synchronous-work-bounded"><a class="header" href="#keep-synchronous-work-bounded">Keep synchronous work bounded</a></h3>
+<p>If synchronous processing is unavoidable:</p>
+<ul>
+<li>keep execution time short</li>
+<li>avoid slow downstream dependencies</li>
+<li>use strict timeouts and circuit breakers</li>
+</ul>
+<p>Long-running synchronous work increases retry frequency and duplicate deliveries.</p>
+<hr />
+<h2 id="retries-and-backoff"><a class="header" href="#retries-and-backoff">Retries and backoff</a></h2>
+<p>Deliveries are retried when:</p>
+<ul>
+<li>your endpoint returns a non-2xx status</li>
+<li>your endpoint times out</li>
+<li>transient network failures occur</li>
+</ul>
+<p>Local retry defaults (from <code>config/config.prividium.docker.toml</code>):</p>
+<ul>
+<li><code>max_attempts</code>: <code>10</code></li>
+<li><code>base_backoff_secs</code>: <code>30</code></li>
+<li><code>max_backoff_secs</code>: <code>1800</code> (30 minutes)</li>
+</ul>
+<p>Because retries are expected, idempotency is required.</p>
+<hr />
+<h2 id="headers-to-expect"><a class="header" href="#headers-to-expect">Headers to expect</a></h2>
+<p>Each webhook request includes standard HTTP headers plus service-specific metadata.</p>
+<p>Common headers:</p>
+<ul>
+<li><code>content-type: application/json</code></li>
+<li><code>webhook-id</code></li>
+<li><code>webhook-timestamp</code></li>
+<li><code>webhook-signature</code></li>
+</ul>
+<p>Example signature header:</p>
+<pre><code class="language-text">webhook-signature: v1,&lt;sig1&gt; v1,&lt;sig2&gt;
+</code></pre>
+<hr />
+<h2 id="logging-during-development"><a class="header" href="#logging-during-development">Logging during development</a></h2>
+<p>During local testing, it can be helpful to log:</p>
+<ul>
+<li><code>webhook-id</code></li>
+<li><code>webhook-timestamp</code></li>
+<li><code>type</code></li>
+<li>the raw request body (or a truncated preview)</li>
+</ul>
+<p>Avoid logging full payloads or secrets in production environments.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="verifying-signatures"><a class="header" href="#verifying-signatures">Verifying Signatures</a></h1>
+<p>Each webhook delivery includes a cryptographic signature that allows you to verify
+that the request:</p>
+<ul>
+<li>originated from this service</li>
+<li>was not modified in transit</li>
+<li>is recent (protected against replay attacks)</li>
+</ul>
+<p>Signature verification is strongly recommended for all production receivers.</p>
+<hr />
+<h2 id="standard-webhooks-headers"><a class="header" href="#standard-webhooks-headers">Standard Webhooks headers</a></h2>
+<p>Each request includes these headers (case-insensitive):</p>
+<ul>
+<li><code>webhook-id</code></li>
+<li><code>webhook-timestamp</code></li>
+<li><code>webhook-signature</code></li>
+</ul>
+<h3 id="header-semantics"><a class="header" href="#header-semantics">Header semantics</a></h3>
+<ul>
+<li><code>webhook-id</code>
+<ul>
+<li>Unique per event</li>
+<li>Stable across retries</li>
+<li>Use for idempotency</li>
+</ul>
+</li>
+<li><code>webhook-timestamp</code>
+<ul>
+<li>Unix timestamp (seconds)</li>
+<li>Used to prevent replay attacks</li>
+</ul>
+</li>
+<li><code>webhook-signature</code>
+<ul>
+<li>One or more signatures (space-delimited)</li>
+<li>Supports key rotation</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="signing-key"><a class="header" href="#signing-key">Signing key</a></h2>
+<p>Each webhook endpoint is associated with a signing key (sometimes called a signing
+secret).</p>
+<ul>
+<li>The key is shared only between you and the service</li>
+<li>It is used as the HMAC key when computing the signature</li>
+<li>You must store it securely (treat it like an API key)</li>
+<li>It is returned on webhook creation and key rotation</li>
+</ul>
+<p>The signing key is not included in webhook payloads or headers.</p>
+<hr />
+<h2 id="signature-format"><a class="header" href="#signature-format">Signature format</a></h2>
+<pre><code>webhook-signature: v1,&lt;sig1&gt; v1,&lt;sig2&gt;
+</code></pre>
+<ul>
+<li>Each signature is <code>v1,&lt;base64&gt;</code> where <code>base64</code> is an HMAC-SHA256 digest</li>
+<li>Multiple signatures may be present during key rotation</li>
+</ul>
+<hr />
+<h2 id="what-is-signed"><a class="header" href="#what-is-signed">What is signed</a></h2>
+<p>The signing input is:</p>
+<pre><code>&lt;webhook-id&gt;.&lt;webhook-timestamp&gt;.&lt;raw-payload&gt;
+</code></pre>
+<p>Important:</p>
+<ul>
+<li>The payload must be verified exactly as received</li>
+<li>Do not parse and re-serialize JSON before verification</li>
+</ul>
+<p>Even minor formatting changes will invalidate signatures.</p>
+<hr />
+<h2 id="verification-steps-production"><a class="header" href="#verification-steps-production">Verification steps (production)</a></h2>
+<ol>
+<li>Read the raw request body bytes</li>
+<li>Extract:
+<ul>
+<li><code>webhook-id</code></li>
+<li><code>webhook-timestamp</code></li>
+<li><code>webhook-signature</code></li>
+</ul>
+</li>
+<li>Parse the timestamp and enforce a tolerance window (recommend +/- 5 minutes)</li>
+<li>For each active signing key, compute the <code>v1</code> signature over the signing input</li>
+<li>Compare signatures using constant-time comparison</li>
+<li>Accept the request if any signature verifies</li>
+<li>Deduplicate using <code>webhook-id</code></li>
+</ol>
+<hr />
+<h2 id="mock-server-reference-implementation"><a class="header" href="#mock-server-reference-implementation">Mock server reference implementation</a></h2>
+<p>The mock server in <code>tools/mock-server</code> mirrors the verification logic and can be
+used as a reference implementation (not a hardened production consumer).</p>
+<p>Standard Webhooks provides multi-language verification examples <a href="https://github.com/standard-webhooks/standard-webhooks/tree/main/libraries">here</a>.</p>
+<h3 id="single-signing-key"><a class="header" href="#single-signing-key">Single signing key</a></h3>
+<pre><code class="language-bash">cd tools/mock-server
+WEBHOOK_SECRET="whsec_..." cargo run
+</code></pre>
+<h3 id="multiple-signing-keys-rotation-support"><a class="header" href="#multiple-signing-keys-rotation-support">Multiple signing keys (rotation support)</a></h3>
+<pre><code class="language-bash">cd tools/mock-server
+WEBHOOK_SECRET="whsec_old,whsec_new" cargo run
+</code></pre>
+<p>In multi-key mode the mock server verifies the signature against all active keys
+and accepts the request if any signature matches.</p>
+<hr />
+<h2 id="verification-failures"><a class="header" href="#verification-failures">Verification failures</a></h2>
+<p>If signature verification fails:</p>
+<ul>
+<li>return a <code>4xx</code> response (typically <code>401</code> or <code>400</code>)</li>
+<li>do not process the payload</li>
+<li>do not retry internally</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rotating-signing-keys"><a class="header" href="#rotating-signing-keys">Rotating Signing Keys</a></h1>
+<p>Rotate immediately if a signing key is exposed or suspected compromised.</p>
+<p>Signing keys can be rotated per webhook endpoint. The new signing key is returned
+once; store it securely.</p>
+<hr />
+<h2 id="1-obtain-the-endpoint-uuid"><a class="header" href="#1-obtain-the-endpoint-uuid">1. Obtain the endpoint UUID</a></h2>
+<p>Several operations (such as signing key rotation) require the webhook endpoint
+UUID. You can retrieve endpoint IDs using the list endpoints APIs. These endpoints
+only return webhooks owned by the authenticated user.</p>
+<h3 id="address-webhooks---list-endpoints"><a class="header" href="#address-webhooks---list-endpoints">Address webhooks - list endpoints</a></h3>
+<pre><code class="language-bash">curl "http://localhost:8081/v1/address-webhook?limit=20&amp;offset=0" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;"
+</code></pre>
+<p>Each item in the response includes an <code>id</code> field:</p>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "name": "example-event-webhook",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "9592c92a-19f7-4ee4-9ed1-945293f6fd2d",
+    "endpoint_id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "chain_name": "zksyncos_prividium",
+    "chain_id": 8022834,
+    "contract": "0x32de7f85388d15365f87d96c94241a43880eba26",
+    "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b",
+    "from_block": 31114,
+    "status": "active"
+  },
+  "user_id": "G8df2r3YFnrG5gwpn7"
+}
+</code></pre>
+<p>Use the value of <code>endpoint.id</code> as <code>&lt;ENDPOINT_UUID&gt;</code> in subsequent calls.</p>
+<h3 id="event-webhooks---list-endpoints"><a class="header" href="#event-webhooks---list-endpoints">Event webhooks - list endpoints</a></h3>
+<pre><code class="language-bash">curl "http://localhost:8081/v1/event-webhook?limit=20&amp;offset=0" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;"
+</code></pre>
+<p>Example response snippet:</p>
+<pre><code class="language-json">{
+  "endpoint": {
+    "id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "name": "example-event-webhook",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "9592c92a-19f7-4ee4-9ed1-945293f6fd2d",
+    "endpoint_id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "chain_name": "zksyncos_prividium",
+    "chain_id": 8022834,
+    "contract": "0x32de7f85388d15365f87d96c94241a43880eba26",
+    "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b",
+    "from_block": 31114,
+    "status": "active"
+  },
+  "user_id": "G8df2r3YFnrG5gwpn7"
+}
+</code></pre>
+<hr />
+<h2 id="2-rotate-a-signing-key"><a class="header" href="#2-rotate-a-signing-key">2. Rotate a signing key</a></h2>
+<p>The new signing key is returned once. Store it securely.</p>
+<h3 id="rotate-event-webhook-signing-key"><a class="header" href="#rotate-event-webhook-signing-key">Rotate event webhook signing key</a></h3>
+<pre><code class="language-bash">curl -X POST "http://localhost:8081/v1/event-webhook/&lt;ENDPOINT_UUID&gt;/signing-keys/rotate" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "retire_after_secs": 86400,
+    "version": "v1"
+  }'
+</code></pre>
+<h3 id="rotate-address-webhook-signing-key"><a class="header" href="#rotate-address-webhook-signing-key">Rotate address webhook signing key</a></h3>
+<pre><code class="language-bash">curl -X POST "http://localhost:8081/v1/address-webhook/&lt;ENDPOINT_UUID&gt;/signing-keys/rotate" \
+  -H "Authorization: Bearer &lt;TOKEN&gt;" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "retire_after_secs": 86400,
+    "version": "v1"
+  }'
+</code></pre>
+<hr />
+<h2 id="3-rotation-parameters"><a class="header" href="#3-rotation-parameters">3. Rotation parameters</a></h2>
+<p>All fields are optional:</p>
+<pre><code class="language-json">{}
+</code></pre>
+<ul>
+<li><code>retire_after_secs</code>
+<ul>
+<li>Overlap window where old and new keys are valid</li>
+<li>Recommended: <code>86400</code> (24 hours)</li>
+</ul>
+</li>
+<li><code>version</code>
+<ul>
+<li>Signature version (<code>v1</code>)</li>
+<li>Enables forward compatibility</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="4-rotation-response"><a class="header" href="#4-rotation-response">4. Rotation response</a></h2>
+<p>The response includes:</p>
+<ul>
+<li><code>signing_key</code> (returned once)</li>
+<li><code>key_id</code></li>
+<li><code>version</code></li>
+</ul>
+<p>Signing keys cannot be retrieved again.</p>
+<hr />
+<h2 id="5-support-multiple-signatures-required"><a class="header" href="#5-support-multiple-signatures-required">5. Support multiple signatures (required)</a></h2>
+<p>During rotation, webhook deliveries may include multiple signatures:</p>
+<pre><code>webhook-signature: v1,&lt;sig1&gt; v1,&lt;sig2&gt;
+</code></pre>
+<p>Consumers should:</p>
+<ul>
+<li>Iterate over all provided signatures</li>
+<li>Attempt verification with all active keys</li>
+<li>Accept the request if any signature verifies</li>
+</ul>
+<hr />
+<h2 id="6-recommended-rotation-workflow"><a class="header" href="#6-recommended-rotation-workflow">6. Recommended rotation workflow</a></h2>
+<ol>
+<li>Rotate and store the new signing key.</li>
+<li>Update consumers to accept both old and new keys.</li>
+<li>Allow the overlap window to pass.</li>
+<li>Remove the old key from your verifier.</li>
+</ol>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>
