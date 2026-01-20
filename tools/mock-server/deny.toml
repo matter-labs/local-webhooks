@@ -13,30 +13,21 @@ feature-depth = 1
 
 [advisories]
 ignore = [
-    { id = "RUSTSEC-2024-0436", reason = "`paste` is unmaintained, but is still widely used" },
-    { id = "RUSTSEC-2026-0002", reason = "Awaiting alloy-rs to include lru bump and release" }
 ]
 
 [licenses]
 allow = [
     "MIT",
     "Apache-2.0",
-    "ISC",
     "Unlicense",
-    "CC0-1.0",
     "BSD-2-Clause",
     "BSD-3-Clause",
-    "Zlib",
-    "Apache-2.0 WITH LLVM-exception",
-    "0BSD",
     "BSL-1.0",
-    "Unicode-3.0",
-    "CDLA-Permissive-2.0",
+    "Unicode-3.0",    
 ]
 exceptions = [
     # exceptions are in place due to https://github.com/matter-labs/zksync-os
     # CC0 is a bit unclear about source code: https://tldrlegal.com/license/creative-commons-cc0-1.0-universal
-    { allow = ["CC0-1.0"], name = "tiny-keccak" }
 ]
 confidence-threshold = 0.8
 
