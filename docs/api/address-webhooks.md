@@ -16,6 +16,7 @@ Each address webhook consists of:
 | Method | Path |
 |------|------|
 | POST | `/v1/address-webhook` |
+| GET | `/v1/address-webhook` |
 | GET | `/v1/address-webhook/{id}` |
 | PATCH | `/v1/address-webhook/{id}` |
 | DELETE | `/v1/address-webhook/{id}` |
@@ -24,6 +25,48 @@ Each address webhook consists of:
 | DELETE | `/v1/address-webhook/{id}/addresses` |
 
 All routes require authentication.
+
+---
+
+## List Address Webhooks
+
+List all address webhooks owned by the authenticated user. This is the best way
+to obtain the endpoint UUIDs used by get, update, delete, address management, and
+signing key rotation endpoints.
+
+### Request
+
+```bash
+curl "http://localhost:8081/v1/address-webhook?limit=20&offset=0" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+### Response (`200 OK`)
+
+Each item includes an `endpoint.id` field. Use that value as `<ENDPOINT_UUID>` in
+subsequent calls.
+
+Example item:
+
+```json
+{
+  "endpoint": {
+    "id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "name": "example-address-webhook",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "9592c92a-19f7-4ee4-9ed1-945293f6fd2d",
+    "endpoint_id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "chain_name": "prividium_testnet",
+    "chain_id": 8022834,
+    "from_block": 31114,
+    "status": "active"
+  },
+  "user_id": "G8df2r3YFnrG5gwpn7"
+}
+```
 
 ---
 
@@ -40,10 +83,10 @@ Create a new webhook endpoint and register an address subscription.
 ```bash
 curl -X POST http://localhost:8081/v1/address-webhook \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer <TOKEN>" \
   -d '{
     "name": "webhook-address",
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "addresses": [
       "0x0e9c68525eA0739f9f013c8042cFe8CD1f323C19",
       "0x5A39B3f95812DC1E902ab745A8FB5894a8ab8897"
@@ -58,7 +101,7 @@ curl -X POST http://localhost:8081/v1/address-webhook \
   "endpoint": {
     "id": "7ef711b5-26aa-4989-860a-9305f3f3715f",
     "name": "webhook-address",
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "signing_key": "whsec_38f30005e37490b6656b278f99547a9a9453ca4d472feefd0983054802a5373c",
     "enabled": true
   },
@@ -70,7 +113,7 @@ curl -X POST http://localhost:8081/v1/address-webhook \
     "from_block": 19122,
     "status": "active"
   },
-  "user_id": "Rz4ovpmb-1--qLH3HZv_y"
+  "user_id": "Rz4ovpmb-1--qLH3HZ"
 }
 ```
 
@@ -83,8 +126,8 @@ Retrieve a single address webhook by ID.
 ### Request
 
 ```bash
-curl -X GET http://localhost:8081/v1/address-webhook/{id} \
-  -H "Authorization: Bearer <token>"
+curl -X GET http://localhost:8081/v1/address-webhook/<ENDPOINT_UUID> \
+  -H "Authorization: Bearer <TOKEN>"
 ```
 
 ### Response (`200 OK`)
@@ -94,7 +137,7 @@ curl -X GET http://localhost:8081/v1/address-webhook/{id} \
   "endpoint": {
     "id": "7ef711b5-26aa-4989-860a-9305f3f3715f",
     "name": "webhook-address",
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "enabled": true
   },
   "subscription": {
@@ -105,7 +148,7 @@ curl -X GET http://localhost:8081/v1/address-webhook/{id} \
     "from_block": 19122,
     "status": "active"
   },
-  "user_id": "Rz4ovpmb-1--qLH3HZv_y"
+  "user_id": "Rz4ovpmb-1--qLH3H"
 }
 ```
 
@@ -120,11 +163,11 @@ Update mutable webhook fields.
 ### Request
 
 ```bash
-curl -X PATCH http://localhost:8081/v1/address-webhook/{id} \
+curl -X PATCH http://localhost:8081/v1/address-webhook/<ENDPOINT_UUID> \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer <TOKEN>" \
   -d '{
-    "url": "http://localhost:9000/webhook"
+    "url": "http://host.docker.internal:9000/webhook"
   }'
 ```
 
@@ -135,7 +178,7 @@ curl -X PATCH http://localhost:8081/v1/address-webhook/{id} \
   "endpoint": {
     "id": "5b2a8400-d965-48c5-b74d-bf83c33d13be",
     "name": "My Address Watcher",
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "enabled": true
   },
   "subscription": {
@@ -158,8 +201,8 @@ Permanently deletes the webhook endpoint and its associated subscription.
 ### Request
 
 ```bash
-curl -X DELETE http://localhost:8081/v1/address-webhook/{id} \
-  -H "Authorization: Bearer <token>"
+curl -X DELETE http://localhost:8081/v1/address-webhook/<ENDPOINT_UUID> \
+  -H "Authorization: Bearer <TOKEN>"
 ```
 
 ### Response (`204 No Content`)
@@ -173,8 +216,8 @@ No response body is returned.
 ### List Addresses
 
 ```bash
-curl -X GET http://localhost:8081/v1/address-webhook/{id}/addresses \
-  -H "Authorization: Bearer <token>"
+curl -X GET http://localhost:8081/v1/address-webhook/<ENDPOINT_UUID>/addresses \
+  -H "Authorization: Bearer <TOKEN>"
 ```
 
 ```json
@@ -193,9 +236,9 @@ curl -X GET http://localhost:8081/v1/address-webhook/{id}/addresses \
 - At least **one address** is required.
 
 ```bash
-curl -X POST http://localhost:8081/v1/address-webhook/{id}/addresses \
+curl -X POST http://localhost:8081/v1/address-webhook/<ENDPOINT_UUID>/addresses \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer <TOKEN>" \
   -d '{
     "addresses": [
       "0x1111111111111111111111111111111111111111"
@@ -210,9 +253,9 @@ curl -X POST http://localhost:8081/v1/address-webhook/{id}/addresses \
 ### Remove Addresses
 
 ```bash
-curl -X DELETE http://localhost:8081/v1/address-webhook/{id}/addresses \
+curl -X DELETE http://localhost:8081/v1/address-webhook/<ENDPOINT_UUID>/addresses \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer <TOKEN>" \
   -d '{
     "addresses": [
       "0x1111111111111111111111111111111111111111"

@@ -7,54 +7,113 @@ that the request:
 - was not modified in transit
 - is recent (protected against replay attacks)
 
-Signature verification is **strongly recommended** for all production receivers.
+Signature verification is strongly recommended for all production receivers.
 
 ---
 
-## Signature header
+## Standard Webhooks headers
 
-Each request includes an `x-webhook-signature` header with the following format:
+Each request includes these headers (case-insensitive):
 
-```bash
-x-webhook-signature: t=<unix_timestamp>,v1=<hex_digest>
-```
+- `webhook-id`
+- `webhook-timestamp`
+- `webhook-signature`
 
-Where:
+### Header semantics
 
-- `t` is a UNIX timestamp (seconds)
-- `v1` is the HMAC-SHA256 signature (hex encoded)
-
-Example:
-
-```text
-x-webhook-signature: t=1768843259,v1=d24fd15fe590092c5b3a644f565c670bf5d9987197b3337a88f5f09bbc620480
-```
+- `webhook-id`
+  - Unique per event
+  - Stable across retries
+  - Use for idempotency
+- `webhook-timestamp`
+  - Unix timestamp (seconds)
+  - Used to prevent replay attacks
+- `webhook-signature`
+  - One or more signatures (space-delimited)
+  - Supports key rotation
 
 ---
 
-## Signing secret
+## Signing key
 
-Each webhook endpoint is associated with a **signing secret**.
+Each webhook endpoint is associated with a signing key (sometimes called a signing
+secret).
 
-- The secret is shared only between you and the service
+- The key is shared only between you and the service
 - It is used as the HMAC key when computing the signature
 - You must store it securely (treat it like an API key)
-- This is included in the webhook creation response
+- It is returned on webhook creation and key rotation
 
-> The signing secret is **not** included in webhook payloads or headers.
+The signing key is not included in webhook payloads or headers.
 
 ---
 
-## Verification steps
+## Signature format
 
-To verify a webhook request:
+```
+webhook-signature: v1,<sig1> v1,<sig2>
+```
+
+- Each signature is `v1,<base64>` where `base64` is an HMAC-SHA256 digest
+- Multiple signatures may be present during key rotation
+
+---
+
+## What is signed
+
+The signing input is:
+
+```
+<webhook-id>.<webhook-timestamp>.<raw-payload>
+```
+
+Important:
+
+- The payload must be verified exactly as received
+- Do not parse and re-serialize JSON before verification
+
+Even minor formatting changes will invalidate signatures.
+
+---
+
+## Verification steps (production)
 
 1. Read the raw request body bytes
-2. Extract `t` and `v1` from the `x-webhook-signature` header
-3. Construct the signing input: `<t>.<raw_body>`
-4. Compute the HMAC-SHA256 digest using your signing secret
-5. Compare the computed digest to `v1`
-6. Reject the request if verification fails
+2. Extract:
+   - `webhook-id`
+   - `webhook-timestamp`
+   - `webhook-signature`
+3. Parse the timestamp and enforce a tolerance window (recommend +/- 5 minutes)
+4. For each active signing key, compute the `v1` signature over the signing input
+5. Compare signatures using constant-time comparison
+6. Accept the request if any signature verifies
+7. Deduplicate using `webhook-id`
+
+---
+
+## Mock server reference implementation
+
+The mock server in `tools/mock-server` mirrors the verification logic and can be
+used as a reference implementation (not a hardened production consumer).
+
+Standard Webhooks provides multi-language verification examples [here](https://github.com/standard-webhooks/standard-webhooks/tree/main/libraries).
+
+### Single signing key
+
+```bash
+cd tools/mock-server
+WEBHOOK_SECRET="whsec_..." cargo run
+```
+
+### Multiple signing keys (rotation support)
+
+```bash
+cd tools/mock-server
+WEBHOOK_SECRET="whsec_old,whsec_new" cargo run
+```
+
+In multi-key mode the mock server verifies the signature against all active keys
+and accepts the request if any signature matches.
 
 ---
 
@@ -63,7 +122,5 @@ To verify a webhook request:
 If signature verification fails:
 
 - return a `4xx` response (typically `401` or `400`)
-- do **not** process the payload
-- do **not** retry internally
-
-The service may retry delivery depending on response code and timing.
+- do not process the payload
+- do not retry internally

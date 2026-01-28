@@ -20,10 +20,14 @@ The following tools must be installed and available in your `PATH`:
 
 Add the following values to your `.env` file (or export them in your shell):
 
+**Note:** Update these values to reflect your own environment.
+
 - `API_URL` — base URL for the service  
-  _Example:_ `https://api.example.dev`
+  _Example:_ `https://api.testnet.zksync.dev`
 - `DOMAIN` — SIWE domain  
-  _Example:_ `user-panel.example.dev`
+  _Example:_ `user-panel.testnet.zksync.dev`
+
+> These values are only used by helper scripts, not by the running service.
 
 ### Load `.env` into your shell (recommended)
 
@@ -32,6 +36,9 @@ set -a
 source .env
 set +a
 ```
+
+If you use `make get-token`, the Make target sources `.env` for you. When running
+`scripts/get_token.sh` directly, make sure `API_URL` and `DOMAIN` are exported.
 
 ---
 
@@ -102,13 +109,13 @@ If the address does not match the signer, the script will fail with a clear erro
 ## Using Make (Foundry account)
 
 ```bash
-make get-token ACCOUNT_NAME=dev
+make get-token ACCOUNT=dev
 ```
 
 Optionally pin / verify an address:
 
 ```bash
-make get-token ACCOUNT_NAME=dev ADDRESS=0xYourAddress
+make get-token ACCOUNT=dev ADDRESS=0xYourAddress
 ```
 
 ---
@@ -129,21 +136,8 @@ PRIVATE_KEY=0xabc... scripts/get_token.sh 0xYourAddress
 
 The script will ensure the private key corresponds to the provided address.
 
----
-
-## Using Make (PRIVATE_KEY)
-
-```bash
-make get-token PRIVATE_KEY=0xabc...
-```
-
-Optionally pin / verify an address:
-
-```bash
-make get-token PRIVATE_KEY=0xabc... ADDRESS=0xYourAddress
-```
-
----
+Note: the `make get-token` helper always uses `--account`, so for `PRIVATE_KEY`
+signing you must run `scripts/get_token.sh` directly.
 
 ## Output
 

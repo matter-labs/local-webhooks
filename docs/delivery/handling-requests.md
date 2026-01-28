@@ -18,8 +18,8 @@ Your handler **must be idempotent**.
 
 Recommended approaches:
 
-- deduplicate using the `id` field in the payload
-- or deduplicate using `(x-webhook-subscription, id)` as a compound key
+- deduplicate using the `webhook-id` header (stable across retries)
+- if you receive multiple endpoints on one URL, pair `webhook-id` with an endpoint identifier from the URL or payload
 - design processing so re-running the same payload is safe
 
 ---
@@ -92,13 +92,14 @@ Each webhook request includes standard HTTP headers plus service-specific metada
 Common headers:
 
 - `content-type: application/json`
-- `x-webhook-signature` — signature for authenticity verification
-- `x-webhook-subscription` — subscription identifier (UUID)
+- `webhook-id`
+- `webhook-timestamp`
+- `webhook-signature`
 
 Example signature header:
 
 ```text
-x-webhook-signature: t=1768843259,v1=<hex_digest>
+webhook-signature: v1,<sig1> v1,<sig2>
 ```
 
 ---
@@ -107,8 +108,8 @@ x-webhook-signature: t=1768843259,v1=<hex_digest>
 
 During local testing, it can be helpful to log:
 
-* `x-webhook-subscription`
-* delivery `id`
+* `webhook-id`
+* `webhook-timestamp`
 * `type`
 * the raw request body (or a truncated preview)
 

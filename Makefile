@@ -116,14 +116,12 @@ mock-server:
 
 # --------------------------------------
 # Utility: Get Tenant Token via SIWE
+# Usage: make get-token ACCOUNT=test-account
 # --------------------------------------
 
 .PHONY: get-token
 get-token:
-	@echo "Running SIWE token flow..."
-	@API_URL="$(API_URL)" DOMAIN="$(DOMAIN)" \
-	ACCOUNT_NAME="$(ACCOUNT_NAME)" PRIVATE_KEY="$(PRIVATE_KEY)" ADDRESS="$(ADDRESS)" \
-		scripts/get_token.sh
+	@set -a && source .env && set +a && ./scripts/get_token.sh --account $(ACCOUNT)
 
 # ------------------------------------------------------------------------------
 # Documentation

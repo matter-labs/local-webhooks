@@ -2,8 +2,10 @@
 
 - [Overview](./index.md)
 - [Quickstart](./quickstart.md)
+- [Configuration](./configuration.md)
 - [Authentication](./auth/README.md)
   - [Quay Login](./auth/quay.md)
+  - [Prividium Service Account](./auth/service-account.md)
   - [SIWE Token](./auth/siwe.md)
 - [Using the API](./api/README.md)
   - [Event Webhooks](./api/event-webhooks.md)

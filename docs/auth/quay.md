@@ -2,6 +2,8 @@
 
 The webhook-service image is hosted on Quay and requires credentials from Matter Labs.
 
+Recall this is only necessary when running the Webhook service locally.
+
 Set the following values in `.env`:
 
 - `DOCKER_USERNAME`

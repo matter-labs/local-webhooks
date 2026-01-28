@@ -13,11 +13,56 @@ Each event webhook consists of:
 | Method | Path |
 |------|------|
 | POST | `/v1/event-webhook` |
+| GET | `/v1/event-webhook` |
 | GET | `/v1/event-webhook/{id}` |
 | PATCH | `/v1/event-webhook/{id}` |
 | DELETE | `/v1/event-webhook/{id}` |
 
 All routes require authentication.
+
+---
+
+## List Event Webhooks
+
+List all event webhooks owned by the authenticated user. This is the best way
+to obtain the endpoint UUIDs used by get, update, delete, and signing key
+rotation endpoints.
+
+### Request
+
+```bash
+curl "http://localhost:8081/v1/event-webhook?limit=20&offset=0" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+### Response (`200 OK`)
+
+Each item includes an `endpoint.id` field. Use that value as `<ENDPOINT_UUID>` in
+subsequent calls.
+
+Example item:
+
+```json
+{
+  "endpoint": {
+    "id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "name": "example-event-webhook",
+    "url": "http://host.docker.internal:9000/webhook",
+    "enabled": true
+  },
+  "subscription": {
+    "id": "9592c92a-19f7-4ee4-9ed1-945293f6fd2d",
+    "endpoint_id": "a5113c41-18f3-45a7-b1cd-3acbf8a3f489",
+    "chain_name": "prividium_testnet",
+    "chain_id": 8022834,
+    "contract": "0x32de7f85388d15365f87d96c94241a43880eba26",
+    "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b",
+    "from_block": 31114,
+    "status": "active"
+  },
+  "user_id": "G8df2r3YFnrG5gwpn7rzD"
+}
+```
 
 ---
 
@@ -34,10 +79,10 @@ Create a new webhook endpoint and register an event subscription.
 ```bash
 curl -X POST http://localhost:8081/v1/event-webhook \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer <TOKEN>" \
   -d '{
     "name": "My Mint Watcher",
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "contract": "0x66EC845C0B07D1728B1b14921D561fe7963A5Ab8",
     "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b"
   }'
@@ -50,7 +95,7 @@ curl -X POST http://localhost:8081/v1/event-webhook \
   "endpoint": {
     "id": "588793f2-42bf-496f-ac46-a7cd7cd3bc08",
     "name": "My Mint Watcher",
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "signing_key": "whsec_0f71ea604c43cea27fc8ccc37bbb523055b0cbf3b9927f1e5e516cc8d1f84e0a",
     "enabled": true
   },
@@ -64,7 +109,7 @@ curl -X POST http://localhost:8081/v1/event-webhook \
     "from_block": 18128,
     "status": "active"
   },
-  "user_id": "rCNv_z0CebSRbJd01N_0X"
+  "user_id": "rCNv_z0CebSRbJd01N"
 }
 ```
 
@@ -77,8 +122,8 @@ Retrieve a single event webhook by ID.
 ### Request
 
 ```bash
-curl -X GET http://localhost:8081/v1/event-webhook/{id} \
-  -H "Authorization: Bearer <token>"
+curl -X GET http://localhost:8081/v1/event-webhook/<ENDPOINT_UUID> \
+  -H "Authorization: Bearer <TOKEN>"
 ```
 
 ### Response (`200 OK`)
@@ -88,7 +133,7 @@ curl -X GET http://localhost:8081/v1/event-webhook/{id} \
   "endpoint": {
     "id": "588793f2-42bf-496f-ac46-a7cd7cd3bc08",
     "name": "My Mint Watcher",
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "enabled": true
   },
   "subscription": {
@@ -101,7 +146,7 @@ curl -X GET http://localhost:8081/v1/event-webhook/{id} \
     "from_block": 18128,
     "status": "active"
   },
-  "user_id": "rCNv_z0CbeSRbJd01N_0X"
+  "user_id": "rCNv_z0CbeSRbJd01N"
 }
 ```
 
@@ -117,11 +162,11 @@ The event subscription (`contract`, `topic0`, chain) cannot be changed.
 ### Request
 
 ```bash
-curl -X PATCH http://localhost:8081/v1/event-webhook/{id} \
+curl -X PATCH http://localhost:8081/v1/event-webhook/<ENDPOINT_UUID> \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer <TOKEN>" \
   -d '{
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "enabled": true
   }'
 ```
@@ -133,7 +178,7 @@ curl -X PATCH http://localhost:8081/v1/event-webhook/{id} \
   "endpoint": {
     "id": "588793f2-42bf-496f-ac46-a7cd7cd3bc08",
     "name": "My Mint Watcher",
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "enabled": true
   },
   "subscription": {
@@ -146,7 +191,7 @@ curl -X PATCH http://localhost:8081/v1/event-webhook/{id} \
     "from_block": 18128,
     "status": "active"
   },
-  "user_id": "rCNv_z0CebSRbJd01N_0X"
+  "user_id": "rCNv_z0CebSRbJd01N"
 }
 ```
 
@@ -159,8 +204,8 @@ Permanently deletes the webhook endpoint and its associated subscription.
 ### Request
 
 ```bash
-curl -X DELETE http://localhost:8081/v1/event-webhook/{id} \
-  -H "Authorization: Bearer <token>"
+curl -X DELETE http://localhost:8081/v1/event-webhook/<ENDPOINT_UUID> \
+  -H "Authorization: Bearer <TOKEN>"
 ```
 
 ### Response (`204 No Content`)
@@ -182,4 +227,4 @@ No response body is returned.
 
 - A signing key is generated on creation.
 - The plaintext value is returned **only once**.
-- See for more information
+- See **Webhook Delivery → Rotating Signing Keys** for rotation and overlap details.
