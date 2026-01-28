@@ -1,6 +1,7 @@
-# local-webhooks
+# local-webhooks 
+[![Standard Webhooks](https://img.shields.io/badge/Standard%20Webhooks-Compliant-brightgreen)](https://github.com/standard-webhooks/standard-webhooks)
 
-ZKsync webhook service for local testing. Runs the webhook service and Postgres via Docker Compose, with a configurable webhook receiver target.
+ZKsync webhook service for local testing. Runs the webhook service and Postgres via Docker Compose, with a configurable webhook receiver target. Adheres to open standard webhooks [specification](https://github.com/standard-webhooks/standard-webhooks).
 
 ## Prerequisites
 
