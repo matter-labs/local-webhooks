@@ -130,12 +130,12 @@ get-token:
 .PHONY: docs-serve
 docs-serve:
 	@echo "Serving docs at http://localhost:$(DOCS_PORT) ..."
-	mdbook serve -n 0.0.0.0 -p $(DOCS_PORT)
+	cd docs/ && mdbook serve -n 0.0.0.0 -p $(DOCS_PORT)
 
 .PHONY: docs-build
 docs-build:
-	mdbook build
+	cd docs/ && mdbook build
 
 .PHONY: docs-clean
 docs-clean:
-	rm -rf book
+	cd docs/ && rm -rf book

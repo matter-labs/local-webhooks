@@ -3,7 +3,7 @@ title = "Authenticated ZKsync Webhooks"
 authors = ["Matter Labs"]
 language = "en"
 multilingual = false
-src = "docs"
+src = "src"
 
 [output.html]
 default-theme = "light"
