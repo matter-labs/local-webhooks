@@ -116,14 +116,12 @@ mock-server:
 
 # --------------------------------------
 # Utility: Get Tenant Token via SIWE
+# Usage: make get-token ACCOUNT=test-account
 # --------------------------------------
 
 .PHONY: get-token
 get-token:
-	@echo "Running SIWE token flow..."
-	@API_URL="$(API_URL)" DOMAIN="$(DOMAIN)" \
-	ACCOUNT_NAME="$(ACCOUNT_NAME)" PRIVATE_KEY="$(PRIVATE_KEY)" ADDRESS="$(ADDRESS)" \
-		scripts/get_token.sh
+	@set -a && source .env && set +a && ./scripts/get_token.sh --account $(ACCOUNT)
 
 # ------------------------------------------------------------------------------
 # Documentation
@@ -132,12 +130,12 @@ get-token:
 .PHONY: docs-serve
 docs-serve:
 	@echo "Serving docs at http://localhost:$(DOCS_PORT) ..."
-	mdbook serve -n 0.0.0.0 -p $(DOCS_PORT)
+	cd docs/ && mdbook serve -n 0.0.0.0 -p $(DOCS_PORT)
 
 .PHONY: docs-build
 docs-build:
-	mdbook build
+	cd docs/ && mdbook build
 
 .PHONY: docs-clean
 docs-clean:
-	rm -rf book
+	cd docs/ && rm -rf book

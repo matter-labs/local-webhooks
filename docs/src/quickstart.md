@@ -33,11 +33,35 @@ WEBHOOK_DESTINATION_URL=http://host.docker.internal:9000/webhook
 > `PRIVIDIUM_SIGNER_KEY` and `ENCRYPTION_KEY` are only required for local
 > development. In managed deployments, these are handled by ZKsync.
 
+### Create a Prividium service account (local use only)
+
+The webhook service authenticates to Prividium using a **service account**.
+You will use its private key as `PRIVIDIUM_SIGNER_KEY` in your `.env`.
+
+1. Create a new Ethereum account and securely store the public address and private key.
+2. Register the service account in the Prividium Admin Dashboard:
+   - Log in:
+
+     **Note:** Update to reflect your own environment.
+
+     ```bash
+     https://admin.testnet.zksync.dev/
+     ```
+
+   - Navigate to **Services**
+   - Click **+ New Service**
+   - Fill in:
+     - **Name**: Descriptive service name (e.g. `local-webhooks`)
+     - **Public Key**: The Ethereum address created above
+   - Click **Save**
+
+You should now see the service listed in the Services table.
+
 ---
 
 ## 2. Log in to Quay.io
 
-Docker images are pulled from Quay and require authentication.
+Docker images are pulled from Quay and require authentication. Recall these credentials will be provided to you by Matter Labs.
 
 ```bash
 make login
@@ -56,9 +80,17 @@ make up
 By default:
 
 - API base URL: `http://localhost:8081`
-- Configurable via `API_PORT` in `.env`
+- If you only need a different host port, set `API_PORT` in `.env`
+- If you need the service to listen on a different port, update the config file
+  and Docker Compose (see [Configuration](./configuration.md))
 
 The startup output lists available API endpoints.
+
+To view the service logs, run:
+
+```bash
+make logs
+```
 
 ---
 
@@ -80,41 +112,28 @@ It is useful for inspecting payloads and signature headers.
 
 API endpoints for Prividium chains require authentication. This repo includes a helper that obtains a token via **Sign-In with Ethereum (SIWE)**.
 
-### Recommended (Foundry account)
+### 5.1 Configure SIWE auth context (local only)
 
-If you use Foundry, this is the recommended approach:
+Ensure the following exist in your `.env`:
 
-```bash
-make get-token ACCOUNT_NAME=dev
+**Note:** Update values to reflect correct API_URL and domain.
+
+```
+API_URL=https://api.testnet.zksync.dev
+DOMAIN=user-panel.testnet.zksync.dev
 ```
 
-The script will:
+> These values are only used by helper scripts, not by the running service.
 
-- derive the signer address from the Foundry account
-- request a SIWE message
-- sign it
-- exchange it for a token
+### 5.2 Generate a token (Foundry keystore recommended)
 
-Export the token for convenience:
+Make sure a Foundry account exists in your keystore (see the **SIWE Token Helper**
+page for how to create or import an account).
 
-```bash
-export TOKEN=<value>
-```
-
-### Fallback (raw private key)
-
-If you don’t have a Foundry account:
+**Note:** Update `ACCOUNT` to reflect own Foundry keystore name.
 
 ```bash
-make get-token PRIVATE_KEY=0xabc...
-```
-
-### Optional address verification
-
-You may explicitly verify the signer address:
-
-```bash
-make get-token ACCOUNT_NAME=dev ADDRESS=0xYourAddress
+make get-token ACCOUNT=test-account
 ```
 
 On success, the token is printed to stdout:
@@ -124,6 +143,26 @@ TOKEN: <value>
 ```
 
 Treat this token as a credential.
+
+Export the returned token for convenience:
+
+```bash
+export TOKEN=<PASTE_TOKEN_HERE>
+```
+
+### 5.3 Alternative (raw private key)
+
+If you don’t have a Foundry account, you can run the script directly:
+
+```bash
+PRIVATE_KEY=0xabc... scripts/get_token.sh
+```
+
+Optional address verification:
+
+```bash
+PRIVATE_KEY=0xabc... ADDRESS=0xYourAddress scripts/get_token.sh
+```
 
 ---
 
@@ -141,7 +180,7 @@ curl -X POST "$API_URL/v1/event-webhook" \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
     "name": "example-event-webhook",
-    "url": "http://localhost:9000/webhook",
+    "url": "http://host.docker.internal:9000/webhook",
     "contract": "0x66EC845C0B07D1728B1b14921D561fe7963A5Ab8",
     "topic0": "0xcf3dc07771cc79f08443885798a1e22d38a980af01eb51c3fd4b475afa81467b"
   }'
@@ -157,7 +196,7 @@ WEBHOOK_DESTINATION_URL
 
 If you are running the mock receiver, you should see:
 
-- request headers (including `x-webhook-signature`)
+- request headers (including `webhook-signature`)
 - the full JSON payload printed
 
 ### Troubleshooting delivery

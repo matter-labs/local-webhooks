@@ -4,7 +4,7 @@ set -euo pipefail
 # Utility: Get a tenant token via SIWE.
 #
 # DX principles:
-# - PRIVATE_KEY is the default/happy path.
+# - PRIVATE_KEY is the default
 # - ADDRESS is optional; if omitted we derive it from signer.
 # - Foundry --account is supported but only if explicitly chosen.
 #
@@ -13,7 +13,7 @@ set -euo pipefail
 #   DOMAIN    (e.g. user-panel.example.dev)
 #
 # Signer inputs (choose one):
-#   PRIVATE_KEY=<0x...>              (recommended; default signer)
+#   PRIVATE_KEY=<0x...>              
 #   --private-key <0x...>
 #   --account <foundry-account-name> (explicit opt-in)
 #

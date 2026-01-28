@@ -1,6 +1,7 @@
-# local-webhooks
+# local-webhooks 
+[![Standard Webhooks](https://img.shields.io/badge/Standard%20Webhooks-Compliant-brightgreen)](https://github.com/standard-webhooks/standard-webhooks)
 
-ZKsync webhook service for local testing. Runs the webhook service and Postgres via Docker Compose, with a configurable webhook receiver target.
+ZKsync webhook service for local testing. Runs the webhook service and Postgres via Docker Compose, with a configurable webhook receiver target. Adheres to open standard webhooks [specification](https://github.com/standard-webhooks/standard-webhooks).
 
 ## Prerequisites
 
@@ -8,6 +9,10 @@ ZKsync webhook service for local testing. Runs the webhook service and Postgres 
 - Quay.io credentials for the private webhook image
 - Optional: Rust toolchain (for `make mock-server`)
 - Optional: mdbook (for `make docs-serve` / `make docs-build`)
+
+## Documentation
+
+Run `make docs-serve` for the full docs site, including API examples (default: `http://localhost:3000`).
 
 ## Quickstart
 
@@ -54,10 +59,6 @@ Key routes:
 - `POST /v1/address-webhook/:id/addresses`
 - `DELETE /v1/address-webhook/:id/addresses`
 
-## Documentation
-
-Run `make docs-serve` for the full docs site, including API examples (default: `http://localhost:3000`).
-
 ## Configuration
 
 - Service config: `config/config.prividium.docker.toml` (mounted read-only into the container).
@@ -72,7 +73,7 @@ make down      # stop services
 make reset     # stop and remove data volume
 make logs      # follow webhook-service logs
 make status    # container status
-make get-token ADDRESS=0xYourAddress
+make get-token ACCOUNT=dev
 make docs-serve
 make docs-build
 ```
