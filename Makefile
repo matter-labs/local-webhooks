@@ -37,7 +37,7 @@ ENV_FILE := .env
 .PHONY: setup
 setup:
 	@if [ ! -f $(ENV_FILE) ]; then \
-		cp env.example .env && echo "Created .env from env.example"; \
+		cp .env-example .env && echo "Created .env from .env-example"; \
 	else \
 		echo ".env already exists"; \
 	fi

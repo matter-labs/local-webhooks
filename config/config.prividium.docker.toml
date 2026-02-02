@@ -47,6 +47,20 @@ base_backoff_secs = 30      # First retry: 30s
 max_backoff_secs = 1800     # Cap at 30 minutes
 
 # -----------------------------------------------------------------
+# Payload Pruning (Data minimization / retention)
+# -----------------------------------------------------------------
+
+[payload_pruning]
+# Run pruning once every hour
+interval_secs = 3600
+
+# Retain payloads for 7 days
+retention_days = 7
+
+# Max rows to prune per batch
+batch_size = 5000
+
+# -----------------------------------------------------------------
 # Resilience & Supervision (Failure handling)
 # -----------------------------------------------------------------
 
@@ -73,6 +87,7 @@ max_worker_backoff_secs = 60    # Cap waiting at 1 min
 [chain]
 name = "zksyncos_prividium"
 chain_id = 8022834
+mode = "Prividium"
 
 # RPC Provider URL
 # Note: For local development against a local node, use "http://127.0.0.1:8545"
