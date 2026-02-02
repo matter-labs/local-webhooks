@@ -1,6 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# --- load .env (optional) ---------------------------------------------------
+# Loads variables from .env if present, without requiring the user to export them.
+# Honors any vars already set in the environment.
+dotenv_load() {
+  local env_file="${ENV_FILE:-.env}"
+
+  # Try repo root + script dir if you want (pick one policy)
+  if [[ -f "$env_file" ]]; then
+    :
+  elif [[ -f "$(dirname "$0")/../.env" ]]; then
+    env_file="$(dirname "$0")/../.env"
+  elif [[ -f "$(dirname "$0")/.env" ]]; then
+    env_file="$(dirname "$0")/.env"
+  else
+    return 0
+  fi
+
+  # shellcheck disable=SC1090
+  set -a
+  source "$env_file"
+  set +a
+}
+
+dotenv_load
+
+# --- get_token.sh -----------------------------------------------------------
+
 # Utility: Get a tenant token via SIWE.
 #
 # DX principles:

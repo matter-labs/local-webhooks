@@ -71,6 +71,16 @@ If you want the service to listen on different internal ports:
 
 ---
 
+### Payload Pruning (`[payload_pruning]`)
+Controls retention and pruning of delivery job payloads.
+
+```toml
+[payload_pruning]
+interval_secs = 3600   # Run every hour
+retention_days = 7      # Keep payloads for 7 days
+batch_size = 5000       # Max rows pruned per batch
+```
+
 ## Other common settings
 
 Use `config/config.prividium.docker.toml` to tune:

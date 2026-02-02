@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
 
   webhook-service:
-    image: quay.io/matterlabs_enterprise/webhook-service:v0.1.12
+    image: quay.io/matterlabs_enterprise/webhook-service:v0.1.13
     platform: linux/amd64
     container_name: webhook-service
     init: true
